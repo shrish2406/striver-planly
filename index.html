@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>DSA Sprint Planner</title>
+    <style>
+      :root {
+        --bg: #05070d;
+        --card: #0b1120;
+        --card2: #0f1830;
+        --line: #16264a;
+        --blue: #2f7bff;
+        --blue2: #5aa2ff;
+        --glow: rgba(47, 123, 255, 0.35);
+        --tx: #e6eeff;
+        --mut: #7f93bd;
+        --ok: #2fd1a0;
+        box-sizing: border-box;
+        padding-top: env(safe-area-inset-top, 0px);
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-padding-top: env(safe-area-inset-top, 0px);
+      }
+      body {
+        margin: 0;
+        background: radial-gradient(
+            1000px 500px at 80% -10%,
+            #0b1c44 0,
+            transparent 60%
+          ),
+          var(--bg);
+        color: var(--tx);
+        font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto,
+          sans-serif;
+        min-height: 100%;
+      }
+      .wrap {
+        max-width: 1150px;
+        margin: 0 auto;
+        padding: 20px 16px 60px;
+      }
+      h1 {
+        font-size: 26px;
+        margin: 0 0 4px;
+        letter-spacing: -0.5px;
+      }
+      h1 span {
+        color: var(--blue2);
+      }
+      .sub {
+        color: var(--mut);
+        font-size: 14px;
+        margin-bottom: 18px;
+      }
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+      .st {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 14px;
+      }
+      .st b {
+        display: block;
+        font-size: 24px;
+        color: var(--blue2);
+      }
+      .st small {
+        color: var(--mut);
+      }
+      .bar {
+        height: 8px;
+        background: #0d1a38;
+        border-radius: 99px;
+        overflow: hidden;
+      }
+      .bar i {
+        display: block;
+        height: 100%;
+        background: linear-gradient(90deg, var(--blue), var(--blue2));
+        box-shadow: 0 0 12px var(--glow);
+        transition: width 0.3s;
+      }
+      .main {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 14px;
+        margin-bottom: 16px;
+      }
+      .main .row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 13px;
+        color: var(--mut);
+        margin-bottom: 8px;
+      }
+      .tools {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        margin-bottom: 14px;
+      }
+      .chip,
+      .btn {
+        background: var(--card);
+        color: var(--tx);
+        border: 1px solid var(--line);
+        padding: 7px 13px;
+        border-radius: 99px;
+        font-size: 13px;
+        cursor: pointer;
+        font-family: inherit;
+      }
+      .chip:hover,
+      .btn:hover {
+        border-color: var(--blue);
+      }
+      .chip.on {
+        background: var(--blue);
+        border-color: var(--blue);
+        box-shadow: 0 0 14px var(--glow);
+        color: #fff;
+      }
+      input[type='search'] {
+        flex: 1;
+        min-width: 160px;
+        background: var(--card);
+        border: 1px solid var(--line);
+        color: var(--tx);
+        padding: 8px 14px;
+        border-radius: 99px;
+        font-family: inherit;
+        font-size: 13px;
+        outline: none;
+      }
+      input[type='search']:focus {
+        border-color: var(--blue);
+      }
+      .sp {
+        margin-top: 22px;
+      }
+      .sph {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 10px;
+        margin-bottom: 8px;
+        flex-wrap: wrap;
+      }
+      .sph h2 {
+        margin: 0;
+        font-size: 18px;
+      }
+      .sph h2 em {
+        font-style: normal;
+        color: var(--blue2);
+      }
+      .sph span {
+        color: var(--mut);
+        font-size: 12px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 12px;
+        margin-top: 10px;
+      }
+      .day {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 13px;
+      }
+      .day.today {
+        border-color: var(--blue);
+        box-shadow: 0 0 0 1px var(--blue), 0 0 20px var(--glow);
+      }
+      .day.done {
+        background: var(--card2);
+      }
+      .dh {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+      .dh b {
+        font-size: 14px;
+      }
+      .dh small {
+        color: var(--mut);
+        font-size: 11px;
+        display: block;
+      }
+      .badge {
+        font-size: 10px;
+        background: var(--blue);
+        color: #fff;
+        padding: 2px 7px;
+        border-radius: 99px;
+        margin-left: 6px;
+      }
+      .pct {
+        font-size: 12px;
+        color: var(--blue2);
+        font-weight: 600;
+      }
+      .day.done .pct {
+        color: var(--ok);
+      }
+      .t {
+        display: flex;
+        gap: 9px;
+        align-items: flex-start;
+        padding: 7px 4px;
+        border-top: 1px solid #101c3a;
+        cursor: pointer;
+        font-size: 13px;
+        line-height: 1.35;
+      }
+      .t input {
+        appearance: none;
+        width: 17px;
+        height: 17px;
+        border: 1.5px solid var(--blue);
+        border-radius: 5px;
+        flex: none;
+        margin: 1px 0 0;
+        cursor: pointer;
+        background: transparent;
+        position: relative;
+      }
+      .t input:checked {
+        background: var(--blue);
+        box-shadow: 0 0 8px var(--glow);
+      }
+      .t input:checked::after {
+        content: '';
+        position: absolute;
+        left: 4.5px;
+        top: 1px;
+        width: 4px;
+        height: 9px;
+        border: solid #fff;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+      }
+      .t.x span {
+        color: var(--mut);
+        text-decoration: line-through;
+      }
+      .t span {
+        flex: 1;
+      }
+      .tag {
+        display: block;
+        color: var(--blue);
+        font-size: 10.5px;
+        margin-top: 2px;
+      }
+      .tg {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+        gap: 10px;
+        margin-bottom: 16px;
+      }
+      .tc {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 11px 12px;
+        cursor: pointer;
+      }
+      .tc:hover {
+        border-color: var(--blue);
+      }
+      .tc.on {
+        border-color: var(--blue);
+        box-shadow: 0 0 0 1px var(--blue), 0 0 14px var(--glow);
+      }
+      .tc .r {
+        display: flex;
+        justify-content: space-between;
+        font-size: 13px;
+        margin-bottom: 7px;
+      }
+      .tc .r span {
+        color: var(--blue2);
+        font-weight: 600;
+      }
+      .t a {
+        color: inherit;
+        text-decoration: none;
+      }
+      .t a:hover {
+        color: var(--blue2);
+        text-decoration: underline;
+      }
+      .t a::after {
+        content: ' ↗';
+        color: var(--blue);
+        font-size: 11px;
+      }
+      .t em {
+        font-style: normal;
+        color: var(--mut);
+        font-size: 11px;
+        white-space: nowrap;
+      }
+      .empty {
+        color: var(--mut);
+        text-align: center;
+        padding: 40px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <h1>DSA <span>Sprint Planner</span></h1>
+      <div class="sub" id="sub"></div>
+      <div class="stats" id="stats"></div>
+      <div class="main">
+        <div class="row">
+          <span>Overall progress</span><span id="ptxt"></span>
+        </div>
+        <div class="bar"><i id="pbar" style="width: 0"></i></div>
+      </div>
+      <div class="sub" style="margin: 0 0 8px">
+        Topic-wise progress · click a topic to filter
+      </div>
+      <div class="tg" id="topics"></div>
+      <div class="tools">
+        <div
+          id="sprintChips"
+          style="display: flex; flex-wrap: wrap; gap: 8px"
+        ></div>
+      </div>
+      <div class="tools">
+        <input type="search" id="q" placeholder="Search questions…" />
+        <button class="chip on" data-f="all">All</button>
+        <button class="chip" data-f="pending">Pending</button>
+        <button class="chip" data-f="done">Solved</button>
+        <button class="btn" id="reset">Reset</button>
+      </div>
+      <div id="out"></div>
+    </div>
+    <script>
+      const RAW = `Majority Element-I~17;Kadane's Algorithm~19;Majority Element-II~25;Maximum Product Subarray in an Array~18;Sort an array of 0's 1's and 2's~24
+3 Sum~37
+Next Permutation~26;4 Sum~27;Merge two sorted arrays without extra space~32;Trapping Rainwater~29
+Count Inversions~23;Reverse Pairs~31
+Two Sum~17;Longest Consecutive Sequence in an Array~22
+Longest subarray with sum K~40;Count subarrays with given sum~22;Count subarrays with given xor K~23;Find peak element~32
+Find minimum in Rotated Sorted Array~15;Search in rotated sorted array-II~12;Single element in sorted array~22
+Search in 2D matrix - II~15;Find Peak Element - II~20;Find Nth root of a number~20;Koko eating bananas~20;Aggressive Cows~26
+Book Allocation Problem~27;Matrix Median~23;Kth element of 2 sorted arrays~10
+Median of 2 sorted arrays~50;Longest Substring Without Repeating Characters~22;Maximum Points You Can Obtain from Cards~11;Max Consecutive Ones III~29
+Longest Repeating Character Replacement~25;Longest Substring With At Most K Distinct Characters~21
+Minimum Window Substring~26;Number of Substrings Containing All Three Characters~19
+Binary Subarrays With Sum~20;Count number of Nice subarrays~4;Power Set~20;Generate Parentheses~22;Letter Combinations of a Phone Number~12;Combination Sum~16;Combination Sum II~15
+Subsets II~21;Palindrome partitioning~18;Word Search~19
+N Queen~24;Sudoku Solver~31;Find Middle of Linked List~14;Find the intersection point of Y LL~32
+Check if LL is palindrome or not~20;Detect a loop in LL~20;Remove Nth node from the back of the LL~16
+Find the starting point in LL~21;Length of loop in LL~14;Reverse a LL~32;Merge two Sorted Lists~18;Sort a Linked List of 0's 1's and 2's~22
+Add two numbers in Linked List~14;Rotate a LL~12;Sort LL~22
+Clone a LL with random and next pointer~33;Reverse LL in group of given size K~24
+Flattening of LL~33;Next Greater Element~18;Next Greater Element - 2~15;Stock span problem~19;Sum of Subarray Minimums~23;Sum of Subarray Ranges~10
+Remove K Digits~15;Sliding Window Maximum~20
+Largest rectangle in a histogram~31;Maximum Rectangles~12;Implement Min Stack~21;Asteroid Collision~17;Celebrity Problem~16
+LRU Cache~25
+LFU Cache~45;Jump Game - I~10;Valid Paranthesis Checker~25;Candy~30
+N meetings in one room~13;Insert Interval~13;Non-overlapping Intervals~8;Minimum number of platforms required for a railway~18
+Job sequencing Problem~16;Heapify Algorithm~23;Build heap from a given Array~15
+Implement Min Heap~12;K-th Largest element in an array~44;Find Median from Data Stream~45;Level Order Traversal~8
+Maximum Width of BT~21;Right/Left View of BT~12;Top View of BT~9;Print all nodes at a distance of K in BT~16
+Minimum time taken to burn the BT from a given Node~17;Vertical Order Traversal~18;Print root to leaf path in BT~10;Diameter of Binary Tree~13;LCA in BT~13;Boundary Traversal~9;Construct a BT from Preorder and Inorder~18;Morris Inorder Traversal~19
+Maximum path sum~17;Serialize and De-serialize BT~16;Insert a given node in BST~7;LCA in BST~8
+Delete a node in BST~15;Inorder successor and predecessor in BST~10;Kth Smallest and Largest element in BST~8;Check if a tree is a BST or not~9;Construct a BST from a preorder traversal~16;Two sum in BST~14;Correct BST with two nodes swapped~16;Largest BST in Binary Tree~17
+Flood fill algorithm~20;Number of islands~24
+Rotten Oranges~22;Distance of nearest cell having one~20
+Surrounded Regions~23;Number of distinct islands~18;Detect a cycle in an undirected graph~38;Bipartite graph~32
+Detect a cycle in a directed graph~23;Topological sort or Kahn's algorithm~26;Course Schedule II~11
+Alien Dictionary~20;Kosaraju's algorithm~22;Bridges in graph~23;Articulation point in graph~21;Shortest path in undirected graph with unit weights~16
+Shortest path in DAG~26
+Dijkstra's algorithm~47;Path with minimum effort~24;Cheapest flight within K stops~23
+Bellman ford algorithm~27;Floyd warshall algorithm~30
+Word ladder I~28
+Word ladder II~48;Disjoint Set~41;Find the MST weight~31
+Number of operations to make network connected~14;Number of islands II~25
+Making a large island~26;Frog jump with K distances~16;House robber~9;Ninja's training~51;Unique paths II~12;Best time to buy and sell stock with transaction fees~6
+Best time to buy and sell stock IV~12;0 and 1 Knapsack~40
+Partition a set into two subsets with minimum absolute sum difference~29;Target sum~8;Coin change II~22;Longest common subsequence~46;Longest common substring~14
+Longest palindromic subsequence~9;Longest Increasing Subsequence~40
+Number of Longest Increasing Subsequences~20;Edit distance~37
+Wildcard matching~43;Matrix chain multiplication~61
+Palindrome partitioning II~22;Trie Implementation and Advanced Operations~22
+Longest Word with All Prefixes~25;Number of distinct substrings in a string~17;Maximum XOR of two numbers in an array~34;Maximum Xor with an element from an array~23
+Rabin Karp Algorithm~34
+Z function~35;KMP Algorithm or LPS array~29;Shortest Palindrome~7;Power Set Bit Manipulation~12;Single Number - II~30
+Single Number - III~24
+Find the repeating and missing number~41;Print all primes till N~18`
+      const AVAIL = [60, 60, 120, 60, 120, 60, 120],
+        WD = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+        MO = [
+          'Jan',
+          'Feb',
+          'Mar',
+          'Apr',
+          'May',
+          'Jun',
+          'Jul',
+          'Aug',
+          'Sep',
+          'Oct',
+          'Nov',
+          'Dec'
+        ]
+      const START = Date.UTC(2026, 9, 1)
+      const SL = Object.fromEntries(
+        `Majority Element-I=majority-element
+Kadane's Algorithm=maximum-subarray
+Majority Element-II=majority-element-ii
+Maximum Product Subarray in an Array=maximum-product-subarray
+Sort an array of 0's 1's and 2's=sort-colors
+3 Sum=3sum
+Next Permutation=next-permutation
+4 Sum=4sum
+Merge two sorted arrays without extra space=merge-sorted-array
+Trapping Rainwater=trapping-rain-water
+Reverse Pairs=reverse-pairs
+Two Sum=two-sum
+Longest Consecutive Sequence in an Array=longest-consecutive-sequence
+Count subarrays with given sum=subarray-sum-equals-k
+Find peak element=find-peak-element
+Find minimum in Rotated Sorted Array=find-minimum-in-rotated-sorted-array
+Search in rotated sorted array-II=search-in-rotated-sorted-array-ii
+Single element in sorted array=single-element-in-a-sorted-array
+Search in 2D matrix - II=search-a-2d-matrix-ii
+Find Peak Element - II=find-a-peak-element-ii
+Koko eating bananas=koko-eating-bananas
+Book Allocation Problem=split-array-largest-sum
+Median of 2 sorted arrays=median-of-two-sorted-arrays
+Longest Substring Without Repeating Characters=longest-substring-without-repeating-characters
+Maximum Points You Can Obtain from Cards=maximum-points-you-can-obtain-from-cards
+Max Consecutive Ones III=max-consecutive-ones-iii
+Longest Repeating Character Replacement=longest-repeating-character-replacement
+Longest Substring With At Most K Distinct Characters=longest-substring-with-at-most-k-distinct-characters
+Minimum Window Substring=minimum-window-substring
+Number of Substrings Containing All Three Characters=number-of-substrings-containing-all-three-characters
+Binary Subarrays With Sum=binary-subarrays-with-sum
+Count number of Nice subarrays=count-number-of-nice-subarrays
+Power Set=subsets
+Generate Parentheses=generate-parentheses
+Letter Combinations of a Phone Number=letter-combinations-of-a-phone-number
+Combination Sum=combination-sum
+Combination Sum II=combination-sum-ii
+Subsets II=subsets-ii
+Palindrome partitioning=palindrome-partitioning
+Word Search=word-search
+N Queen=n-queens
+Sudoku Solver=sudoku-solver
+Find Middle of Linked List=middle-of-the-linked-list
+Find the intersection point of Y LL=intersection-of-two-linked-lists
+Check if LL is palindrome or not=palindrome-linked-list
+Detect a loop in LL=linked-list-cycle
+Remove Nth node from the back of the LL=remove-nth-node-from-end-of-list
+Find the starting point in LL=linked-list-cycle-ii
+Reverse a LL=reverse-linked-list
+Merge two Sorted Lists=merge-two-sorted-lists
+Add two numbers in Linked List=add-two-numbers
+Rotate a LL=rotate-list
+Sort LL=sort-list
+Clone a LL with random and next pointer=copy-list-with-random-pointer
+Reverse LL in group of given size K=reverse-nodes-in-k-group
+Next Greater Element=next-greater-element-i
+Next Greater Element - 2=next-greater-element-ii
+Stock span problem=online-stock-span
+Sum of Subarray Minimums=sum-of-subarray-minimums
+Sum of Subarray Ranges=sum-of-subarray-ranges
+Remove K Digits=remove-k-digits
+Sliding Window Maximum=sliding-window-maximum
+Largest rectangle in a histogram=largest-rectangle-in-histogram
+Maximum Rectangles=maximal-rectangle
+Implement Min Stack=min-stack
+Asteroid Collision=asteroid-collision
+Celebrity Problem=find-the-celebrity
+LRU Cache=lru-cache
+LFU Cache=lfu-cache
+Jump Game - I=jump-game
+Valid Paranthesis Checker=valid-parentheses
+Candy=candy
+Insert Interval=insert-interval
+Non-overlapping Intervals=non-overlapping-intervals
+K-th Largest element in an array=kth-largest-element-in-an-array
+Find Median from Data Stream=find-median-from-data-stream
+Level Order Traversal=binary-tree-level-order-traversal
+Maximum Width of BT=maximum-width-of-binary-tree
+Right/Left View of BT=binary-tree-right-side-view
+Print all nodes at a distance of K in BT=all-nodes-distance-k-in-binary-tree
+Minimum time taken to burn the BT from a given Node=amount-of-time-for-binary-tree-to-be-infected
+Vertical Order Traversal=vertical-order-traversal-of-a-binary-tree
+Print root to leaf path in BT=binary-tree-paths
+Diameter of Binary Tree=diameter-of-binary-tree
+LCA in BT=lowest-common-ancestor-of-a-binary-tree
+Boundary Traversal=boundary-of-binary-tree
+Construct a BT from Preorder and Inorder=construct-binary-tree-from-preorder-and-inorder-traversal
+Morris Inorder Traversal=binary-tree-inorder-traversal
+Maximum path sum=binary-tree-maximum-path-sum
+Serialize and De-serialize BT=serialize-and-deserialize-binary-tree
+Insert a given node in BST=insert-into-a-binary-search-tree
+LCA in BST=lowest-common-ancestor-of-a-binary-search-tree
+Delete a node in BST=delete-node-in-a-bst
+Kth Smallest and Largest element in BST=kth-smallest-element-in-a-bst
+Check if a tree is a BST or not=validate-binary-search-tree
+Construct a BST from a preorder traversal=construct-binary-search-tree-from-preorder-traversal
+Two sum in BST=two-sum-iv-input-is-a-bst
+Correct BST with two nodes swapped=recover-binary-search-tree
+Largest BST in Binary Tree=largest-bst-subtree
+Flood fill algorithm=flood-fill
+Number of islands=number-of-islands
+Rotten Oranges=rotting-oranges
+Distance of nearest cell having one=01-matrix
+Surrounded Regions=surrounded-regions
+Number of distinct islands=number-of-distinct-islands
+Bipartite graph=is-graph-bipartite
+Course Schedule II=course-schedule-ii
+Alien Dictionary=alien-dictionary
+Path with minimum effort=path-with-minimum-effort
+Cheapest flight within K stops=cheapest-flights-within-k-stops
+Word ladder I=word-ladder
+Word ladder II=word-ladder-ii
+Number of operations to make network connected=number-of-operations-to-make-network-connected
+Number of islands II=number-of-islands-ii
+Making a large island=making-a-large-island
+House robber=house-robber
+Unique paths II=unique-paths-ii
+Best time to buy and sell stock with transaction fees=best-time-to-buy-and-sell-stock-with-transaction-fee
+Best time to buy and sell stock IV=best-time-to-buy-and-sell-stock-iv
+Target sum=target-sum
+Coin change II=coin-change-ii
+Longest common subsequence=longest-common-subsequence
+Longest common substring=maximum-length-of-repeated-subarray
+Longest palindromic subsequence=longest-palindromic-subsequence
+Longest Increasing Subsequence=longest-increasing-subsequence
+Number of Longest Increasing Subsequences=number-of-longest-increasing-subsequence
+Edit distance=edit-distance
+Wildcard matching=wildcard-matching
+Palindrome partitioning II=palindrome-partitioning-ii
+Trie Implementation and Advanced Operations=implement-trie-prefix-tree
+Longest Word with All Prefixes=longest-word-in-dictionary
+Maximum XOR of two numbers in an array=maximum-xor-of-two-numbers-in-an-array
+Maximum Xor with an element from an array=maximum-xor-with-an-element-from-array
+Rabin Karp Algorithm=find-the-index-of-the-first-occurrence-in-a-string
+KMP Algorithm or LPS array=find-the-index-of-the-first-occurrence-in-a-string
+Shortest Palindrome=shortest-palindrome
+Single Number - II=single-number-ii
+Single Number - III=single-number-iii
+Find the repeating and missing number=set-mismatch
+Print all primes till N=count-primes`
+          .split('\n')
+          .map(l => l.split('='))
+      )
+      const flat = RAW.split('\n')
+        .flatMap(l => l.split(';'))
+        .map((t, i) => {
+          const [a, b] = t.split('~')
+          return { id: 'q' + i, name: a.trim(), min: +b }
+        })
+      const TM = [
+        ['Majority Element-I', 'Arrays'],
+        ['Find peak element', 'Binary Search'],
+        ['Longest Substring Without Repeating Characters', 'Sliding Window'],
+        ['Power Set', 'Recursion & Backtracking'],
+        ['Find Middle of Linked List', 'Linked List'],
+        ['Next Greater Element', 'Stack & Queue'],
+        ['Jump Game - I', 'Greedy'],
+        ['Heapify Algorithm', 'Heaps'],
+        ['Level Order Traversal', 'Binary Trees'],
+        ['Insert a given node in BST', 'Binary Search Trees'],
+        ['Flood fill algorithm', 'Graphs'],
+        ['Frog jump with K distances', 'Dynamic Programming'],
+        ['Trie Implementation and Advanced Operations', 'Tries'],
+        ['Rabin Karp Algorithm', 'Strings'],
+        ['Power Set Bit Manipulation', 'Bit Manipulation'],
+        ['Find the repeating and missing number', 'Maths']
+      ]
+      let cur = ''
+      flat.forEach(t => {
+        const m = TM.find(x => x[0] == t.name)
+        if (m) cur = m[1]
+        t.topic = cur
+      })
+      const TOPICS = [...new Set(flat.map(t => t.topic))]
+      const lc = t =>
+        SL[t.name]
+          ? 'https://leetcode.com/problems/' + SL[t.name] + '/'
+          : 'https://leetcode.com/problemset/?search=' +
+            encodeURIComponent(t.name)
+      const days = []
+      for (let i = 0, k = 0; i < flat.length; k++) {
+        const av = k % 2 ? 60 : 120,
+          tasks = []
+        let sum = 0
+        while (
+          i < flat.length &&
+          tasks.length < 4 &&
+          (!tasks.length || sum + flat[i].min <= av + 5)
+        ) {
+          sum += flat[i].min
+          tasks.push(flat[i++])
+        }
+        const d = new Date(START + k * 864e5)
+        days.push({
+          n: k + 1,
+          sprint: Math.floor(k / 7) + 1,
+          date: d,
+          key: d.toISOString().slice(0, 10),
+          avail: av,
+          tasks
+        })
+      }
+      const NS = Math.ceil(days.length / 7),
+        E = days[days.length - 1].date
+      document.getElementById('sub').textContent =
+        days.length +
+        ' days · ' +
+        NS +
+        ' sprints · Oct 1 – ' +
+        E.getUTCDate() +
+        ' ' +
+        MO[E.getUTCMonth()] +
+        ' 2026 · max 4 questions/day · 2h and 1h days alternate'
+      const all = days.flatMap(d => d.tasks)
+      let done = {}
+      try {
+        const n = localStorage.getItem('dsa-done2')
+        if (n) done = JSON.parse(n)
+        else {
+          const o = JSON.parse(localStorage.getItem('dsa-done') || '{}'),
+            L = RAW.split('\n').map(l => l.split(';').length)
+          for (const k in o) {
+            const [d, j] = k.split('.')
+            done['q' + (L.slice(0, d - 1).reduce((a, b) => a + b, 0) + +j)] = 1
+          }
+        }
+      } catch (e) {}
+      const save = () => {
+        try {
+          localStorage.setItem('dsa-done2', JSON.stringify(done))
+        } catch (e) {}
+      }
+      let sprint = 0,
+        filter = 'all',
+        query = '',
+        topic = ''
+      const $ = s => document.querySelector(s)
+      const todayKey = new Date().toISOString().slice(0, 10)
+      const fmt = m =>
+        m >= 60
+          ? Math.floor(m / 60) + 'h ' + (m % 60 ? (m % 60) + 'm' : '')
+          : m + 'm'
+      function stats() {
+        const d = all.filter(t => done[t.id]),
+          tm = all.reduce((a, t) => a + t.min, 0),
+          dm = d.reduce((a, t) => a + t.min, 0)
+        const fullDays = days.filter(x => x.tasks.every(t => done[t.id])).length
+        const p = Math.round((d.length / all.length) * 100)
+        $('#stats').innerHTML = [
+          [d.length + ' / ' + all.length, 'Questions solved'],
+          [fullDays + ' / ' + days.length, 'Days completed'],
+          [fmt(dm), 'Time done of ' + fmt(tm)],
+          [p + '%', 'Plan complete']
+        ]
+          .map(
+            x => `<div class="st"><b>${x[0]}</b><small>${x[1]}</small></div>`
+          )
+          .join('')
+        $('#pbar').style.width = p + '%'
+        $('#ptxt').textContent = p + '%'
+        $('#topics').innerHTML = TOPICS.map(n => {
+          const ts = flat.filter(t => t.topic == n),
+            c = ts.filter(t => done[t.id]).length
+          return `<div class="tc ${
+            topic == n ? 'on' : ''
+          }" data-t="${n}"><div class="r"><b>${n}</b><span>${c}/${
+            ts.length
+          }</span></div><div class="bar"><i style="width:${
+            (c / ts.length) * 100
+          }%"></i></div></div>`
+        }).join('')
+      }
+      function chips() {
+        let h = `<button class="chip ${
+          sprint == 0 ? 'on' : ''
+        }" data-s="0">All sprints</button>`
+        for (let s = 1; s <= NS; s++)
+          h += `<button class="chip ${
+            sprint == s ? 'on' : ''
+          }" data-s="${s}">Sprint ${s}</button>`
+        $('#sprintChips').innerHTML = h
+      }
+      function render() {
+        stats()
+        chips()
+        let h = ''
+        for (let s = 1; s <= NS; s++) {
+          if (sprint && sprint != s) continue
+          const ds = days.filter(d => d.sprint == s)
+          const ts = ds.flatMap(d => d.tasks),
+            dn = ts.filter(t => done[t.id]).length
+          let cards = ''
+          for (const d of ds) {
+            const vis = d.tasks.filter(
+              t =>
+                (filter == 'all' || (filter == 'done') == !!done[t.id]) &&
+                t.name.toLowerCase().includes(query) &&
+                (!topic || t.topic == topic)
+            )
+            if (!vis.length) continue
+            const c = d.tasks.filter(t => done[t.id]).length,
+              all_ = c == d.tasks.length
+            const est = d.tasks.reduce((a, t) => a + t.min, 0)
+            cards += `<div class="day ${d.key == todayKey ? 'today' : ''} ${
+              all_ ? 'done' : ''
+            }">
+      <div class="dh"><div><b>Day ${d.n}${
+              d.key == todayKey ? '<span class="badge">TODAY</span>' : ''
+            }</b><small>${WD[d.date.getUTCDay()]}, ${d.date.getUTCDate()} ${
+              MO[d.date.getUTCMonth()]
+            } · ${fmt(est)} of ${fmt(
+              d.avail
+            )}</small></div><span class="pct">${c}/${
+              d.tasks.length
+            }</span></div>
+      <div class="bar" style="margin-bottom:6px"><i style="width:${
+        (c / d.tasks.length) * 100
+      }%"></i></div>
+      ${vis
+        .map(
+          t =>
+            `<label class="t ${
+              done[t.id] ? 'x' : ''
+            }"><input type="checkbox" data-id="${t.id}" ${
+              done[t.id] ? 'checked' : ''
+            }><span><a href="${lc(t)}" target="_blank" rel="noopener">${
+              t.name
+            }</a><small class="tag">${t.topic}</small></span><em>${
+              t.min
+            }m</em></label>`
+        )
+        .join('')}</div>`
+          }
+          if (!cards) continue
+          h += `<section class="sp"><div class="sph"><h2>Sprint <em>${s}</em></h2><span>${dn}/${
+            ts.length
+          } solved · ${fmt(
+            ts.reduce((a, t) => a + t.min, 0)
+          )} total</span></div><div class="bar"><i style="width:${
+            (dn / ts.length) * 100
+          }%"></i></div><div class="grid">${cards}</div></section>`
+        }
+        $('#out').innerHTML =
+          h || '<div class="empty">No questions match.</div>'
+      }
+      document.addEventListener('change', e => {
+        const id = e.target.dataset && e.target.dataset.id
+        if (!id) return
+        e.target.checked ? (done[id] = 1) : delete done[id]
+        save()
+        render()
+      })
+      document.addEventListener('click', e => {
+        const s = e.target.dataset.s,
+          f = e.target.dataset.f
+        if (s !== undefined) {
+          sprint = +s
+          render()
+        }
+        if (f) {
+          filter = f
+          document
+            .querySelectorAll('[data-f]')
+            .forEach(b => b.classList.toggle('on', b.dataset.f == f))
+          render()
+        }
+      })
+      document.addEventListener('click', e => {
+        const c = e.target.closest('[data-t]')
+        if (c) {
+          topic = topic == c.dataset.t ? '' : c.dataset.t
+          render()
+        }
+      })
+      $('#q').addEventListener('input', e => {
+        query = e.target.value.toLowerCase()
+        render()
+      })
+      $('#reset').addEventListener('click', () => {
+        if (confirm('Clear all solved progress?')) {
+          done = {}
+          save()
+          render()
+        }
+      })
+      render()
+    </script>
+  </body>
+</html>
